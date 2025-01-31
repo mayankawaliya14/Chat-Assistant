@@ -1,6 +1,6 @@
 import requests
 
-URL = "http://127.0.0.1:3000/query"
+URL = "https://chat-assistant-csr6.onrender.com/query"
 
 queries = [
     "show me all employees in Sales department",

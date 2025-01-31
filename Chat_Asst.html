@@ -6,7 +6,7 @@
     <title>Chat Assistant</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -14,106 +14,145 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #121212; 
             color: white;
         }
+        
         .chat-container {
             width: 50%;
-            background: white;
+            background: #1c1c1c; 
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            border: 1px solid #292929;
         }
+
+        h2 {
+            text-align: center;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
         .chat-box {
-            height: 300px;
+            height: 350px;
             overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #f9f9f9;
+            border: none;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #181818;
             border-radius: 10px;
             display: flex;
             flex-direction: column;
         }
+
         .message {
-            padding: 10px;
+            padding: 12px;
             margin: 5px 0;
-            border-radius: 8px;
-            max-width: 80%;
+            border-radius: 10px;
+            max-width: 70%;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            display: inline-block;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
         }
+
         .user {
             align-self: flex-end;
-            background: #007bff;
-            color: white;
+            background: #3d3d3d;
+            color: #fff;
+            border-radius: 15px 15px 0px 15px;
         }
+
         .assistant {
             align-self: flex-start;
-            background: #f1f1f1;
-            color: #333;
+            background: #252525;
+            color: #e0e0e0;
+            border-radius: 15px 15px 15px 0px;
         }
+
+        .input-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         .input-box {
-            width: 80%;
+            flex: 1;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: none;
             border-radius: 8px;
             font-size: 16px;
+            background: #2a2a2a;
+            color: white;
+            outline: none;
         }
+
         .send-btn {
-            padding: 12px 20px;
+            padding: 12px 18px;
             border: none;
-            background: #28a745;
+            background: #008CBA;
             color: white;
             font-size: 16px;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 10px;
             transition: background 0.3s;
         }
+
         .send-btn:hover {
-            background: #218838;
+            background: #0077A3;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            background: #212121;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #444;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
+
         th, td {
             padding: 12px;
             text-align: left;
+            color: #ddd;
+            border-bottom: 1px solid #444;
         }
+
         th {
-            background: #007bff;
-            color: white;
+            background: #333;
+            color: #bbb;
+            text-transform: uppercase;
         }
+
         tr:nth-child(even) {
-            background: #f2f2f2;
+            background: #282828;
         }
+
     </style>
 </head>
 <body>
     <div class="chat-container">
-        <h2 style="text-align: center; color: #333;">Chat with Assistant</h2>
+        <h2>Chat with Assistant</h2>
         <div class="chat-box" id="chatBox"></div>
-        <input type="text" id="userInput" class="input-box" placeholder="Type your query here...">
-        <button class="send-btn" onclick="sendMessage()">Send</button>
+
+        <div class="input-container">
+            <input type="text" id="userInput" class="input-box" placeholder="Type your query here...">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
     </div>
 
     <script>
         function sendMessage() {
             const userInput = document.getElementById("userInput").value;
             if (!userInput) return;
-            
+
             const chatBox = document.getElementById("chatBox");
             chatBox.innerHTML += `<p class='message user'><strong>You:</strong> ${userInput}</p>`;
             document.getElementById("userInput").value = "";
-            
-            fetch("http://127.0.0.1:3000/query", {
+
+            fetch("https://chat-assistant-csr6.onrender.com/query", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -132,7 +171,7 @@
         }
 
         function formatResponse(data) {
-            if (Array.isArray(data)) {
+            if (Array.isArray(data) && data.length > 0) {
                 let table = "<table><tr>";
                 Object.keys(data[0]).forEach(key => {
                     table += `<th>${key}</th>`;
