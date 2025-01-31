@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Assistant</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .chat-container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .user {
+            align-self: flex-end;
+            background: #007bff;
+            color: white;
+        }
+        .assistant {
+            align-self: flex-start;
+            background: #f1f1f1;
+            color: #333;
+        }
+        .input-box {
+            width: 80%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .send-btn {
+            padding: 12px 20px;
+            border: none;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .send-btn:hover {
+            background: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2 style="text-align: center; color: #333;">Chat with Assistant</h2>
+        <div class="chat-box" id="chatBox"></div>
+        <input type="text" id="userInput" class="input-box" placeholder="Type your query here...">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (!userInput) return;
+            
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += `<p class='message user'><strong>You:</strong> ${userInput}</p>`;
+            document.getElementById("userInput").value = "";
+            
+            fetch("http://127.0.0.1:3000/query", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const formattedResponse = formatResponse(data);
+                chatBox.innerHTML += formattedResponse;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                chatBox.innerHTML += `<p class='message assistant' style='color:red'><strong>Error:</strong> Unable to connect to server.</p>`;
+            });
+        }
+
+        function formatResponse(data) {
+            if (Array.isArray(data)) {
+                let table = "<table><tr>";
+                Object.keys(data[0]).forEach(key => {
+                    table += `<th>${key}</th>`;
+                });
+                table += "</tr>";
+                data.forEach(obj => {
+                    table += "<tr>";
+                    Object.values(obj).forEach(value => {
+                        table += `<td>${value}</td>`;
+                    });
+                    table += "</tr>";
+                });
+                table += "</table>";
+                return `<div class='message assistant'><strong>Assistant:</strong><br>${table}</div>`;
+            } else if (typeof data === 'object') {
+                return `<p class='message assistant'><strong>Assistant:</strong> ${JSON.stringify(data, null, 2)}</p>`;
+            } else {
+                return `<p class='message assistant'><strong>Assistant:</strong> ${data}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
