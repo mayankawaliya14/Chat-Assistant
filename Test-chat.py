@@ -23,7 +23,6 @@ for query in queries:
     response = requests.post(URL, json={"query": query})
     print(f"Query: {query}")
     
-    # Check if response is valid
     if response.status_code == 200:
         print(f"Response: {response.json()}")
     else:
