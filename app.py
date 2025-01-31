@@ -73,6 +73,9 @@ def create_database():
     conn.commit()
     conn.close()
 
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to the Chat Assistant Backend."})
 
 @app.route('/query', methods=['POST'])
 def query_database():
